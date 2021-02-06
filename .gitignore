@@ -1,9 +1,8 @@
 /node_modules
 /build
+uploads
 
 dev.js
-
-
 
 .DS_Store
 
