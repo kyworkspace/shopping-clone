@@ -3,7 +3,7 @@ import Dropzone from 'react-dropzone'
 import {Icon} from 'antd';
 import Axios from 'axios';
 
-function FileUpload() {
+function FileUpload(props) {
 
     const [Images, setImages] = useState([]);
 
@@ -19,10 +19,24 @@ function FileUpload() {
                 console.log(response.data);
                 //원래 이미지에 새로운 이미지(경로)를 추가해서 붙이는 거임
                 setImages([...Images,response.data.filePath])
+                //부모 컴포넌트에 값 전달
+                props.refreshFunction(Images);
             }else{
                 alert("파일을 업로드하는데 실패하였습니다.");
             }
         })
+    }
+    const deleteHandler =(image)=>{
+        //삭제하고자하는 이미지 인덱스
+        const currentIndex = Images.indexOf(image);
+        //기존 이미지 복사
+        let newImages = [...Images]
+        //삭제
+        newImages.splice(currentIndex,1);
+        //덮어씌움
+        setImages(newImages)
+        //부모 컴포넌트에 값 전달
+        props.refreshFunction(Images);
     }
 
 
@@ -46,7 +60,7 @@ function FileUpload() {
 
             <div style={{display:'flex', width:'350px', height:'240px',overflow:'scroll'}}>
                 {Images.map((item,index)=>(
-                    <div key={index}>
+                    <div key={index} onClick={()=>deleteHandler(item)}>
                         <img style={{minWidth:'300px', width:'300px', height:'240px'}}
                             src={`http://localhost:5000/${item}`} 
                             />
