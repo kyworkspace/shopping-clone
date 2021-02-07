@@ -3,12 +3,18 @@ import Axios from 'axios';
 import {Card,Icon,Col,Row, Carousel} from 'antd'
 import Meta from 'antd/lib/card/Meta';
 import ImageSlider from '../../utils/ImageSlider';
+import CheckBox from './Sections/CheckBox';
+import {continents} from './Sections/Datas';
 
 function LandingPage() {
     const [Products, setProducts] = useState([]);
     const [Skip, setSkip] = useState(0)
     const [Limit, setLimit] = useState(8)
     const [PostSize, setPostSize] = useState(0) // 목록에 보이는 배열 갯수
+    const [Filters, setFilters] = useState({
+        continents:[],
+        price : []
+    });
 
     useEffect(() => {
         //필터값이 들어간 바디
@@ -67,6 +73,25 @@ function LandingPage() {
             
         )
     });
+
+    //  Filter
+    const handlerFilters = (filters,category) => {
+        //넘어오는 값이 filters임
+        const newFilters = {...Filters};
+        newFilters[category] = filters
+
+        showFilterResults(newFilters);
+    }
+    const showFilterResults =(filters)=>{
+        let body = {
+            skip : 0, //새로 하는 것이기 때문에 0부터 시작
+            limit : Limit,
+            filters : filters
+        }
+        getProducts(body)
+        setSkip(0);
+    }
+
     
 
     return (
@@ -75,6 +100,12 @@ function LandingPage() {
                 <h2>여행상품 목록<Icon type="rocket"/></h2>
             </div>
             {/* Filter */}
+            {/* CheckBox */}
+            < CheckBox list={continents} handlerFilters={filter=>handlerFilters(filter,"continents")}/>
+
+            {/* RadioBox */}
+
+
 
             {/* Search */}
 
