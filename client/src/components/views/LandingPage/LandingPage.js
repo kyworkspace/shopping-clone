@@ -6,21 +6,50 @@ import ImageSlider from '../../utils/ImageSlider';
 
 function LandingPage() {
     const [Products, setProducts] = useState([]);
+    const [Skip, setSkip] = useState(0)
+    const [Limit, setLimit] = useState(8)
+    const [PostSize, setPostSize] = useState(0) // 목록에 보이는 배열 갯수
 
     useEffect(() => {
-        let body ={
+        //필터값이 들어간 바디
+        let body = {
+            skip : Skip,
+            limit : Limit,
         }
-        Axios.post("/api/product/products")
+        getProducts(body)
+    }, [])
+
+    const getProducts =(body)=>{
+        Axios.post("/api/product/products",body)
         .then(response=>{
             if(response.data.success){
-                setProducts(response.data.productsInfo)
+                if(body.loadMore){ //더보기를 눌렀을 경우
+                    //기존 배열에 스프레드 오퍼레이터를 써서 붙여줌
+                    setProducts([...Products,...response.data.productsInfo])
+                }else{
+                    setProducts(response.data.productsInfo)
+                }
+                setPostSize(response.data.postSize) //더보기 버튼을 보여줄지 말지
             }else{
                 alert("상품을 불러오는데 실패하였습니다.")
             }
         })
-        
-        
-    }, [])
+    }
+
+    const loadMoreHandler=()=>{
+        //SKIP과 LIMIT은 State로 관리
+        //버튼을 누를때마다 Skip을 관리해서 값을 던져움
+
+        let skip = Skip+Limit;
+
+        let body = {
+            skip : skip,
+            limit : Limit,
+            loadMore : true
+        }
+        getProducts(body)
+        setSkip(skip);
+    }
 
     const renderCards = Products.map((product,i)=>{
         console.log(product)
@@ -38,7 +67,7 @@ function LandingPage() {
             
         )
     });
-
+    
 
     return (
         <div style={{width:'75%', margin:'3rem auto'}}>
@@ -54,11 +83,12 @@ function LandingPage() {
             <Row gutter={[16,16]}>
                 {renderCards}
             </Row>
-
-            <div style={{justifyContent:'center'}}>
-                <button>더보기</button>
-
-            </div>
+            {PostSize >= Limit &&
+                <div style={{justifyContent:'center'}}>
+                    <button onClick={loadMoreHandler}>더보기</button>
+                </div>
+            }
+            
 
         </div>
     )
