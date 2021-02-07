@@ -73,9 +73,7 @@ multer 참고
 - UI 제작 Collapse 사용(Ant Design)
 - 별도로 컴포넌트를 만들어서 부모 컴포넌트로 값을 넘김
 - 값을 넘겨 받아서 서버에 조건을 넘기는데
-
   Product.find(findArgs)
   findArgs => continents: [ 2, 3 ]
-
 - findArgs는 JSON 형태의 데이터 타입이다. 당연하게도 컬럼명과 JSON의 KEY값은 같아야 한다.
   server에 있는 product.js의 57번째 라인을 참고 하자. 넘어온 값이 있으면 해당 값의 키값에 맞는 조건을 형성해서 서버에 보낸다.
