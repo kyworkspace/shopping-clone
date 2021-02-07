@@ -6,6 +6,7 @@ import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
 import {continents, prices} from './Sections/Datas';
 import RadioBox from './Sections/RadioBox';
+import SearchFeatures from './Sections/SearchFeatures';
 
 function LandingPage() {
     const [Products, setProducts] = useState([]);
@@ -16,6 +17,7 @@ function LandingPage() {
         continents:[],
         price : []
     });
+    const [SearchTerm, setSearchTerm] = useState("")
 
     useEffect(() => {
         //필터값이 들어간 바디
@@ -108,8 +110,18 @@ function LandingPage() {
         getProducts(body)
         setSkip(0);
     }
+    const updateSearchTerm =(newSearchTerm)=>{
+        setSearchTerm(newSearchTerm);
 
-    
+        let body={
+            skip : 0, //새로 하는 것이기 때문에 0부터 시작
+            limit : Limit,
+            filters : Filters,
+            searchTerm : newSearchTerm,
+        }
+        getProducts(body)
+        setSkip(0);
+    }
 
     return (
         <div style={{width:'75%', margin:'3rem auto'}}>
@@ -129,6 +141,10 @@ function LandingPage() {
                 </Col>
             </Row>
             {/* Search */}
+            <div style={{display:'flex',justifyContent:'flex-end', margin:'1rem auto'}}>
+                <SearchFeatures refreshFunction={updateSearchTerm}/>
+            </div>
+            
 
             {/* Card */}
             <Row gutter={[16,16]}>

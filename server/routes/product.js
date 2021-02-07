@@ -44,6 +44,7 @@ router.post("/products",(req,res)=>{
   //콜렉션에 들어있는 상품정보 가져오기
   let limit = req.body.limit ? parseInt(req.body.limit) : 20;
   let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+  let term = req.body.searchTerm;
   //필터 적용하기 req.body.filters
   let findArgs = {};
 
@@ -60,17 +61,36 @@ router.post("/products",(req,res)=>{
       }
     }
   }
-  //모든 정보 찾아옴
-  Product.find(findArgs)
-  .populate("writer")
-  .skip(skip) //가져올 인덱스 전달
-  .limit(limit)// 몽고디비에 가져올 숫자를 던져줌
-  .exec((err,productsInfo)=>{
-    if(err) return res.status(400).json({success:false,err})
-    //돌아오는 값에 컬렉션 갯수를 추가해줌(postSize)
-    res.status(200).json({success:true,productsInfo,postSize : productsInfo.length})
-  })
+  //텍스트 검색시 의 조건
 
+  if(term){
+    Product.find(findArgs)
+    .find({$text:{$search:term}}) //텍스트적용 하는곳
+  //   .find({  
+  //     "title": { '$regex': term },
+  //     "description": { '$regex': term },
+  //  })
+    .populate("writer")
+    .skip(skip) //가져올 인덱스 전달
+    .limit(limit)// 몽고디비에 가져올 숫자를 던져줌
+    .exec((err,productsInfo)=>{
+      if(err) return res.status(400).json({success:false,err})
+      //돌아오는 값에 컬렉션 갯수를 추가해줌(postSize)
+      res.status(200).json({success:true,productsInfo,postSize : productsInfo.length})
+    })
+  }else{
+    Product.find(findArgs)
+    .populate("writer")
+    .skip(skip) //가져올 인덱스 전달
+    .limit(limit)// 몽고디비에 가져올 숫자를 던져줌
+    .exec((err,productsInfo)=>{
+      if(err) return res.status(400).json({success:false,err})
+      //돌아오는 값에 컬렉션 갯수를 추가해줌(postSize)
+      res.status(200).json({success:true,productsInfo,postSize : productsInfo.length})
+    })
+  }
+
+  
 })
 
 module.exports = router;

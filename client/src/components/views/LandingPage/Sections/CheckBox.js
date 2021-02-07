@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Collapse, Checkbox} from 'antd';
+import {Collapse, Checkbox, Row, Col} from 'antd';
 const {Panel} = Collapse ;
 function CheckBox(props) {
     //선택된 키값들 배열
@@ -21,8 +21,10 @@ function CheckBox(props) {
     }
     const renderCheckBoxList=() =>props.list && props.list.map((item,i)=>(
         <React.Fragment>
-                <Checkbox key = {i} onChange={()=>handleToggle(item._id)} checked={Checked.indexOf(item._id)>-1 ? true:false}></Checkbox>
-                <span>{item.name}</span>
+                <Col xl={6}>
+                    <Checkbox key = {i} onChange={()=>handleToggle(item._id)} checked={Checked.indexOf(item._id)>-1 ? true:false}></Checkbox>
+                    <span> {item.name} </span>
+                </Col>
         </React.Fragment>
     ))
 
@@ -30,7 +32,9 @@ function CheckBox(props) {
         <div>
             <Collapse defaultActiveKey={['1']}>
                 <Panel header="Continents">
-                    {renderCheckBoxList()}
+                    <Row gutter={[16,16]}>
+                        {renderCheckBoxList()}
+                    </Row>
                 </Panel>
             </Collapse>
         </div>

@@ -69,6 +69,8 @@ multer 참고
 
 #### 검색 기능
 
+#### Check Box
+
 - 체크박스로 검색기능을 할때 LandingPage 내에 Section 폴더를 만들어서 검색 조건에 해당하는 데이터를 불러옴
 - UI 제작 Collapse 사용(Ant Design)
 - 별도로 컴포넌트를 만들어서 부모 컴포넌트로 값을 넘김
@@ -81,6 +83,9 @@ multer 참고
 
 - findArgs는 JSON 형태의 데이터 타입이다. 당연하게도 컬럼명과 JSON의 KEY값은 같아야 한다.
   server에 있는 product.js의 57번째 라인을 참고 하자. 넘어온 값이 있으면 해당 값의 키값에 맞는 조건을 형성해서 서버에 보낸다.
+
+#### Radio Button
+
 - Radio Group 은 AntDesign 으로 만들었고 원리는 CheckBox랑 비슷하다.
 
 ```
@@ -97,3 +102,64 @@ mongodb에 값을 던져 줄때
 1. $gte(Greater than equal)
 2. $lte(Less than equal)
    을 사용하여 값의 범위를 던져준다.
+
+#### Text Filter
+
+- 원리는 똑같음
+- 자식 컴포넌트(SearchFeature) 를 만들어서 부모 컴포넌트로 값을 넘김
+- 누를때 마다 getProducts() 가 작동될거임
+- 텍스트 검색을 할때는 .find()를 한번 더 돌려줘야함
+
+```
+    Product.find(findArgs)
+    .find({$text:{$search:term}}) //텍스트적용 하는곳
+    .populate("writer")
+    .skip(skip) //가져올 인덱스 전달
+    .limit(limit)// 몽고디비에 가져올 숫자를 던져줌
+    .exec((err,productsInfo)=>{
+      if(err) return res.status(400).json({success:false,err})
+      //돌아오는 값에 컬렉션 갯수를 추가해줌(postSize)
+      res.status(200).json({success:true,productsInfo,postSize : productsInfo.length})
+    })
+```
+
+```
+https://docs.mongodb.com/manual/reference/operator/query/text/
+```
+
+설명은 위에서 해줌
+
+1. Model 의 필드를 수정해줘야함
+2. 검색할때 어디에 걸려야 하는지 혹은 어디에 중점적으로 걸려야하는지 옵션을 넣어줘야 함
+
+```
+  productSchema.index({
+      title:'text',
+      description:'text'
+  },{
+      weights:{
+          title:5,
+          description :1
+      }
+  })
+```
+
+스키마에서 title과 description에 text 검색이 가능하도로고 조건을 부여하고
+중요도는 title에 5를 description에 1을 부여하여 검색시 title이 우선적으로 나오도록 한다.
+title은 5배
+description은 1배
+weight을 설정하지 않는 경우 default 값으로 1이 부여 된다.
+
+- 왜 검색을 할때 like 검색이 안되는지 모르겠다...
+- regex를 사용하면 칼럼에 대해서 like 검색이 되긴 되는데, text로는 왜 안되는지 찾아보겠음
+
+```
+  Product.find(findArgs)
+    .find({
+      "title": { '$regex': term },
+      "description": { '$regex': term },
+   })
+    ...
+```
+
+위의 부분이 바꾸면 되긴함
