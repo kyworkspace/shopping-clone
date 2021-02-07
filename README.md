@@ -49,3 +49,10 @@ multer 참고
 
 - server의 models 폴더에 스키마를 생성한다.
 - 저장할때 writer는 쿠키에 저장해둔 로컬 스토리지에서 해도 되고, Auth를 통과할때 각 컴포넌트가 받은 user props를 이용해서 사용자 정보를 가져와도 된다.
+
+### 2021-02-07
+
+- 첫페이지에 나오는 화면 구성(LandingPage.js)
+- UI는 Ant Design의 Card를 이용해서 구성할거임
+- 이미지는 배열로 들어오기 때문에 슬라이드 형태로 돌아가도록 설정(Ant Design -> Carousel)
+- util에 ImageSlider로 컴포넌트 제작후 부착

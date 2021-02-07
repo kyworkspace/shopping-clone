@@ -20,7 +20,7 @@ function FileUpload(props) {
                 //원래 이미지에 새로운 이미지(경로)를 추가해서 붙이는 거임
                 setImages([...Images,response.data.filePath])
                 //부모 컴포넌트에 값 전달
-                props.refreshFunction(Images);
+                props.refreshFunction([...Images,response.data.filePath]);
             }else{
                 alert("파일을 업로드하는데 실패하였습니다.");
             }
@@ -36,7 +36,7 @@ function FileUpload(props) {
         //덮어씌움
         setImages(newImages)
         //부모 컴포넌트에 값 전달
-        props.refreshFunction(Images);
+        props.refreshFunction(newImages);
     }
 
 
