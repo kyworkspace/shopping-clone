@@ -81,3 +81,19 @@ multer 참고
 
 - findArgs는 JSON 형태의 데이터 타입이다. 당연하게도 컬럼명과 JSON의 KEY값은 같아야 한다.
   server에 있는 product.js의 57번째 라인을 참고 하자. 넘어온 값이 있으면 해당 값의 키값에 맞는 조건을 형성해서 서버에 보낸다.
+- Radio Group 은 AntDesign 으로 만들었고 원리는 CheckBox랑 비슷하다.
+
+```
+ if(key==="price"){
+        findArgs[key] = {
+          $gte : req.body.filters[key][0],
+          $lte : req.body.filters[key][1],
+        }
+      }
+```
+
+mongodb에 값을 던져 줄때
+
+1. $gte(Greater than equal)
+2. $lte(Less than equal)
+   을 사용하여 값의 범위를 던져준다.

@@ -50,7 +50,14 @@ router.post("/products",(req,res)=>{
   for(let key in req.body.filters){
     //key => continents or price
     if(req.body.filters[key].length > 0){//각 필터가 있을때
-      findArgs[key] = req.body.filters[key];
+      if(key==="price"){
+        findArgs[key] = {
+          $gte : req.body.filters[key][0],
+          $lte : req.body.filters[key][1],
+        }
+      }else{
+        findArgs[key] = req.body.filters[key];
+      }
     }
   }
   //모든 정보 찾아옴

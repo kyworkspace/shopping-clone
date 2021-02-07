@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios';
-import {Card,Icon,Col,Row, Carousel} from 'antd'
+import {Card,Icon,Col,Row} from 'antd'
 import Meta from 'antd/lib/card/Meta';
 import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
-import {continents} from './Sections/Datas';
+import {continents, prices} from './Sections/Datas';
+import RadioBox from './Sections/RadioBox';
 
 function LandingPage() {
     const [Products, setProducts] = useState([]);
@@ -58,7 +59,6 @@ function LandingPage() {
     }
 
     const renderCards = Products.map((product,i)=>{
-        console.log(product)
         return (
             <Col  key = {i} lg={6} md={8} xs={24}>
                 <Card 
@@ -78,9 +78,26 @@ function LandingPage() {
     const handlerFilters = (filters,category) => {
         //넘어오는 값이 filters임
         const newFilters = {...Filters};
-        newFilters[category] = filters
 
+        if(category==="price"){
+            let priceValues = handlePrice(filters)
+            newFilters[category] = priceValues
+        }else{
+            newFilters[category] = filters
+        }
         showFilterResults(newFilters);
+        //필터 보존
+        setFilters(newFilters)
+    }
+    const handlePrice =(filterValue)=>{
+        const data = prices;
+        let array = [];
+        for(let key in data){
+            if(data[key]._id==parseInt(filterValue,10)){
+                array = data[key].array;
+            }
+        }
+        return array;
     }
     const showFilterResults =(filters)=>{
         let body = {
@@ -100,17 +117,20 @@ function LandingPage() {
                 <h2>여행상품 목록<Icon type="rocket"/></h2>
             </div>
             {/* Filter */}
-            {/* CheckBox */}
-            < CheckBox list={continents} handlerFilters={filter=>handlerFilters(filter,"continents")}/>
-
-            {/* RadioBox */}
-
-
-
+            
+            <Row gutter={[16,16]}>
+                <Col lg={12} xs={24}>
+                    {/* CheckBox */}
+                    < CheckBox list={continents} handlerFilters={filter=>handlerFilters(filter,"continents")}/>
+                </Col>
+                <Col lg={12} xs={24}>
+                    {/* RadioBox */}
+                    <RadioBox list={prices} handlerFilters={filter=>handlerFilters(filter,"price")}/>
+                </Col>
+            </Row>
             {/* Search */}
 
             {/* Card */}
-            
             <Row gutter={[16,16]}>
                 {renderCards}
             </Row>
