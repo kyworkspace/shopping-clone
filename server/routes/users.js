@@ -68,4 +68,62 @@ router.get("/logout", auth, (req, res) => {
     });
 });
 
+router.get("/addToCart", auth, (req, res) => {
+
+    // 먼저 USER Collection에 해당 유저의 정보를 가져옴
+    // auth 에서 쿠키 정보를 넣어뒀기 때문에 유저정보 추출 가능
+    User.findOne({_id:req.user._id}, (err, userInfo)=>{
+        // 가져온 정보에서 카트에다 넣으려 하는 상품이 이미 들어있는지 확인
+        let duplicate = false;
+        userInfo.cart.forEach((item,i)=>{
+            if(item.id ===req.body.productId){
+                duplicate=true;
+            }
+        })
+        
+        if(duplicate){
+            //상품이 이미 있을때 상품 갯수 +1
+            //유저를 찾고 그안에 담긴 cart에서 상품 1개를 찾아줘야 하기 때문에 id를 또 던져 줘야함
+            User.findOneAndUpdate(
+                {_id : req.user._id,"cart.id":req.body.productId},
+                //cart의 quantity를 올려줌
+                // $inc --> increment
+                {$inc:{"cart.$.quantity":1}},
+                //리턴값을 업데이트 된 유저정보로 받기 위에서 new : true 옵션이 들어감
+                {new : true},
+                (err,userInfo)=>{
+                    if(err) return res.status(200).json({success:false,err})
+                    //카트정보만 돌려보냄
+                    res.status(200).json(userInfo.cart)
+                }
+            )
+        }
+        else{
+            //상품이 없을때 상품 id, 갯수, 날짜정보까지 다 넣어줌
+            User.findOneAndUpdate(
+                {_id : req.user._id},
+                //데이터 신규 삽입 cart에 넣을거임
+                {
+                    $push :{
+                        cart:{
+                            id : req.body.productId,
+                            quantity : 1,
+                            date : Date.now()
+                        }
+                    }
+                },
+                //업데이트된 데이터 받자
+                {new : true},
+                (err,userInfo)=>{
+                    if(err) return res.status(200).json({success:false,err})
+                    //카트정보만 돌려보냄
+                    res.status(200).json(userInfo.cart)
+                }
+            )
+
+        }
+
+    })
+});
+
 module.exports = router;

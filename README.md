@@ -278,3 +278,29 @@ useEffect(() => {
 즉 detail 값이 바뀔때 마다 라이프싸이클을 작동시킨다는 뜻
 
 ### Add to Cart
+
+- 장바구니 정보랑 구매이력 정보를 넣을 필드를 User 컬랙션에 추가해줌
+- 유저정보는 리덕스에서 처리해 주었기 때문에 action과 reducer 로 처리하는데, action측에서 데이터 넘겨주기로함(/addToCart)
+- 장바구니 안에 이미 상품이 있으면 +1
+- 있지 않다면 1
+- 카트에 추가된 정보를 리덕스에 저장
+
+```
+findOneAndUpdate(데이터 찾을 조건, 업데이트할 내용, 리턴받을때 어떻게 할건지, 콜백 함수)
+
+            User.findOneAndUpdate(
+                {_id : req.user._id,"cart.id":req.body.productId},
+                //cart의 quantity를 올려줌
+                // $inc --> increment
+                {$inc:{"cart.$.quantity":1}},
+                //리턴값을 업데이트 된 유저정보로 받기 위에서 new : true 옵션이 들어감
+                {new : true},
+                (err,userInfo)=>{
+                    if(err) return res.status(200).json({success:false,err})
+                    //카트정보만 돌려보냄
+                    res.status(200).json(userInfo.cart)
+                }
+            )
+```
+
+- 리듀서에서 받을때는 cart 정보만 받기 때문에 기존 userData를 보존한채로 새로운거(cart) 추가
