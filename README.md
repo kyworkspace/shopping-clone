@@ -163,3 +163,118 @@ weight을 설정하지 않는 경우 default 값으로 1이 부여 된다.
 ```
 
 위의 부분이 바꾸면 되긴함
+
+### Detail Page
+
+#### Route & Data Load
+
+```
+  <Card
+        cover={<a href={`/product/${product._id}`}> <ImageSlider images={product.images}/> </a>}
+    >
+```
+
+- 카드에서 커버를 누르면 디테일로 들어가도록 수정
+  App.js 에서 URL 은
+
+```
+  /product/:productId
+```
+
+위와 같이 ID를 받아서 쓸수 있도록 함.
+Detail Page에서는 API를 통해 정보를 불러와야하 하는데, 이때는 URL에 포함된 productId 정보를 바탕으로 가져올수 있도록 한다.
+아래와 같이 가져올 수 있다.
+
+```
+  const productId = props.match.params.productId;
+```
+
+요청을 보낼때 하나만 가져올 것이기 때문에 쿼리스트링 옵션에 type=single을 추가해준다.
+
+```
+  Axios.get(`/api/product/product_by_id?id=${productId}&type=single`)
+```
+
+라우터에서 처리할때도 form에 담아 body로 보낸것이 아닌 get의 쿼리스트링으로 보낸 것이기 때문에
+
+```
+  router.get('/product_by_id',(req,res)=>{
+    //productId를 이용해서 DB에서 같은 상품의 정보를 가져온다.
+    let type = req.query.type;
+    let productId = req.query.id;
+    ...
+  })
+```
+
+위와 같이 쿼리스트링에서 정보를 뽑아온다.
+
+#### Detail Page UI
+
+상세보기에서 사진을 띄우는데 라이브러리를 사용하면 훨씬 예쁘고 간단하게 뽑을수 있다.
+
+```
+  npm install react-image-gallery --save
+```
+
+리액트 개발자들은 천재인가보다.
+
+- 디테일 페이지 폴더내에 섹션 폴더를 만들어서 이미지를 표출할 곳, 데이터를 보여줄 곳 . 2개의 컴포넌트를 만든다.
+
+```
+<ImageGallery items={}/>
+```
+
+item에 이미지를 넣어 주는데, original과 thumbnail을 구분해서 넣어줌
+
+```
+@import "~react-image-gallery/styles/scss/image-gallery.scss";
+@import "~react-image-gallery/styles/css/image-gallery.css";
+```
+
+css는 index.css에 집어 넣도록 한다.
+
+혹시나 썸네일을 만들고 싶을때는 gm 이라는 모듈을 사용하면 된다고 한다.
+
+```
+https://www.npmjs.com/package/gm
+
+brew install imagemagick
+brew install graphicsmagick
+--위에꺼 2개 먼저 설치해줘야함
+
+npm gm install --save
+```
+
+각설하고 돌아와서
+
+```
+props.detail.images.map(item=>{
+                images.push({
+                    original:`http://localhost:5000/${}`,
+                    thumbnail:`http://localhost:5000/${}`
+                })
+            })
+```
+
+썸네일이 없기 때문에 둘다 같은 걸로 쓰는데, localhost로 부르는 모든 URL들은 배포할때 동적으로 해줘야 한다.
+아니면 코드 꼬임
+
+```
+useEffect(() => {
+        if(props.detail.images && props.detail.images.length > 0){ //등록된 이미지가 있는 경우
+            let images=[];
+            props.detail.images.map(item=>{
+                images.push({
+                    original:`http://localhost:5000/${item}`,
+                    thumbnail:`http://localhost:5000/${item}`
+                })
+            })
+            setImages(images)
+        }
+    }, [props.detail])
+```
+
+라이프 싸이클에서 useEffect를 할때 초기에는 props에 데이터가 없을거임 그래서 useEffect의 두번째 파라미터에 detail을 넣어줌
+즉 detail 값이 바뀔때 마다 라이프싸이클을 작동시킨다는 뜻
+
+### Add to Cart

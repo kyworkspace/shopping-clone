@@ -64,7 +64,7 @@ function LandingPage() {
         return (
             <Col  key = {i} lg={6} md={8} xs={24}>
                 <Card 
-                    cover={ <ImageSlider images={product.images}/> }
+                    cover={<a href={`/product/${product._id}`}> <ImageSlider images={product.images}/> </a>}
                 >
                     <Meta
                         title ={product.title}
@@ -155,8 +155,6 @@ function LandingPage() {
                     <button onClick={loadMoreHandler}>더보기</button>
                 </div>
             }
-            
-
         </div>
     )
 }
