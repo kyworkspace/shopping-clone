@@ -304,3 +304,31 @@ findOneAndUpdate(데이터 찾을 조건, 업데이트할 내용, 리턴받을�
 ```
 
 - 리듀서에서 받을때는 cart 정보만 받기 때문에 기존 userData를 보존한채로 새로운거(cart) 추가
+
+### Cart Page
+
+- 장바구니 페이지
+- 디테일 페이지를 벗어나면 auth를 거치면서 store에 담긴 회원 정보를 갱신하는데, 그안에 cart 정보를 넣어주지 않았기 때문에 안보이게 됨
+
+```
+router.get("/auth", auth, (req, res) => {
+    res.status(200).json({
+        _id: req.user._id,
+        isAdmin: req.user.role === 0 ? false : true,
+        isAuth: true,
+        email: req.user.email,
+        name: req.user.name,
+        lastname: req.user.lastname,
+        role: req.user.role,
+        image: req.user.image,
+        cart : req.user.cart, //장바구니 정보
+        history: req.user.history,//결재 이력 정보
+    });
+});
+```
+
+- 보이도록 수정함
+
+1. CartPage.js 생성
+
+- 아이콘과 배지(Ant Design)을 이용해서 상부메뉴에 탭 노출

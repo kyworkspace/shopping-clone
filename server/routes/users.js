@@ -18,6 +18,8 @@ router.get("/auth", auth, (req, res) => {
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
+        cart : req.user.cart, //장바구니 정보
+        history: req.user.history,//결재 이력 정보
     });
 });
 
@@ -68,7 +70,7 @@ router.get("/logout", auth, (req, res) => {
     });
 });
 
-router.get("/addToCart", auth, (req, res) => {
+router.post("/addToCart", auth, (req, res) => {
 
     // 먼저 USER Collection에 해당 유저의 정보를 가져옴
     // auth 에서 쿠키 정보를 넣어뒀기 때문에 유저정보 추출 가능
@@ -76,7 +78,7 @@ router.get("/addToCart", auth, (req, res) => {
         // 가져온 정보에서 카트에다 넣으려 하는 상품이 이미 들어있는지 확인
         let duplicate = false;
         userInfo.cart.forEach((item,i)=>{
-            if(item.id ===req.body.productId){
+            if(item.id === req.body.productId){
                 duplicate=true;
             }
         })
