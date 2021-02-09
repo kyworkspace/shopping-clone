@@ -332,3 +332,57 @@ router.get("/auth", auth, (req, res) => {
 1. CartPage.js 생성
 
 - 아이콘과 배지(Ant Design)을 이용해서 상부메뉴에 탭 노출
+  1. 장바구니 안에 물품 목록이 있는지 확인
+  2. 쿼리스트링으로 유저정보 안에 있는 cart안에 들어간 상품 ID들과 Quantity 정보를 합쳐줘야함
+  3. 매개변수로 위의 데이터를 action으로 넘김
+  ```
+  dispatch(getCartItems(cartItems,props.user.userData.cart))
+  ```
+  4. 상품 디테일에서 썻던 코드를 재활용 함 , type 값으로 차별점을 둠
+  ```
+  const request = axios.get(`/api/product/product_by_id?id=${cartItems}&type=array`)
+  ```
+  cartItems는 카트에 담긴 상품의 ID의 배열임
+  ```
+  router.get('/product_by_id',(req,res)=>{
+    //productId를 이용해서 DB에서 같은 상품의 정보를 가져온다.
+    let type = req.query.type;
+    let productIds = req.query.id;
+    //type 이 싱글일때는 1개 정보만 가져오고
+    //arry 일때는 여러개 가져옴 ==>id=11122,333,22211,....
+    if(type==="array"){
+      //productIds를 배열형태로 바꿔줘야함 [111222,333,22211,...]
+      let ids = req.query.id.split(",")
+      productIds = ids.map(item=>{
+        return item;
+      });
+    }
+    Product.find({_id:{$in:productIds}}) //$in은 배열안에 들어간 조건으로 값을 찾음
+    ...
+  })
+  ```
+  5. action에서 가져온 데이터와 비교해서 구매수량(quantity) 을 연결해줘야함
+  ```
+  export function getCartItems(cartItems,userCart){
+    //상품을 여러개 가져와야함
+    const request = axios.get(`/api/product/product_by_id?id=${cartItems}&type=array`)
+    .then(response=>{
+        //cartItem에 해당하는 Product Collection을 가져와서 Quatity 정보를 넣어줘야함
+        console.log(userCart)
+        userCart.forEach(item=>{
+            // response안에 있는 상품의 id와 cart의 id를 비교해서
+            response.data.product.forEach((productDetail,i)=>{
+                //id가 같으면 quntity를 넣어줌
+                if(item.id === productDetail._id){
+                    response.data.product[i].quantity = item.quantity
+                }
+            })
+        })
+        return response.data;
+    })
+    return {
+        type : GET_CART_ITEMS,
+        payload : request
+    }
+  }
+  ```

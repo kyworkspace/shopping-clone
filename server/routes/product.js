@@ -93,13 +93,21 @@ router.post("/products",(req,res)=>{
   router.get('/product_by_id',(req,res)=>{
     //productId를 이용해서 DB에서 같은 상품의 정보를 가져온다.
     let type = req.query.type;
-    let productId = req.query.id;
-
-    Product.find({_id:productId})
+    let productIds = req.query.id;
+    //type 이 싱글일때는 1개 정보만 가져오고
+    //arry 일때는 여러개 가져옴 ==>id=11122,333,22211,....
+    if(type==="array"){
+      //productIds를 배열형태로 바꿔줘야함
+      let ids = req.query.id.split(",")
+      productIds = ids.map(item=>{
+        return item;
+      });
+    }
+    Product.find({_id:{$in:productIds}})
     .populate('writer')
     .exec((err,product)=>{
       if (err) return res.status(400).send({success:false,err})
-      return res.status(200).send({success:true,product})
+      return res.status(200).json({success:true,product})
     })
     
   })
