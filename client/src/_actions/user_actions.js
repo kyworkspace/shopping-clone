@@ -5,8 +5,8 @@ import {
     AUTH_USER,
     LOGOUT_USER,
     ADD_TO_CART,
-    GET_CART_ITEMS
-    
+    GET_CART_ITEMS,
+    REMOVE_CART_ITEM
 } from './types';
 import { USER_SERVER } from '../components/Config.js';
 
@@ -65,13 +65,12 @@ export function getCartItems(cartItems,userCart){
     const request = axios.get(`/api/product/product_by_id?id=${cartItems}&type=array`)
     .then(response=>{
         //cartItem에 해당하는 Product Collection을 가져와서 Quatity 정보를 넣어줘야함
-        console.log(userCart)
         userCart.forEach(item=>{
             // response안에 있는 상품의 id와 cart의 id를 비교해서
-            response.data.product.forEach((productDetail,i)=>{
+            response.data.forEach((productDetail,i)=>{
                 //id가 같으면 quntity를 넣어줌
                 if(item.id === productDetail._id){
-                    response.data.product[i].quantity = item.quantity
+                    response.data[i].quantity = item.quantity
                 }
             })
         })
@@ -79,6 +78,26 @@ export function getCartItems(cartItems,userCart){
     })
     return {
         type : GET_CART_ITEMS,
+        payload : request
+    }
+
+}
+
+export function removeCartItem(productId){
+    const request = axios.get(`${USER_SERVER}/removeFromCart?id=${productId}`)
+    .then(response=>{
+        //productInfo 와 cart 정보를 조합해서 cartDetail을 만든다.
+        response.data.cart.forEach(item=>{
+            response.data.productInfo.forEach((product,idx)=>{
+                if(item.id === product._id){
+                    response.data.productInfo[idx].quantity=item.quantity;
+                }
+            })
+        })
+        return response.data;
+    })
+    return {
+        type : REMOVE_CART_ITEM,
         payload : request
     }
 

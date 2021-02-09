@@ -386,3 +386,95 @@ router.get("/auth", auth, (req, res) => {
     }
   }
   ```
+
+6. 리덕스에 저장되는 데이터를 cartDetail : {success:true, product:{...}} 이러한 형태가 아닌 {product:{...}} 이렇게 합시다.
+
+- 디테일 페이지에서 success 부분을 바꿔 줘야함
+
+```
+Axios.get(`/api/product/product_by_id?id=${productId}&type=single`)
+        .then(response=>{
+            setProduct(response.data[0]);
+        })
+        .catch(err=>alert(err))
+```
+
+- user_actions
+
+```
+      ...
+        userCart.forEach(item=>{
+            // response안에 있는 상품의 id와 cart의 id를 비교해서
+            response.data.forEach((productDetail,i)=>{
+                //id가 같으면 quntity를 넣어줌
+                if(item.id === productDetail._id){
+                    response.data[i].quantity = item.quantity
+                }
+            })
+        })
+      ...
+```
+
+- UserCartBlock을 그리는 부분
+
+```
+<UserCardBlock products={props.user.cartDetail}/>
+```
+
+#### 금액 총합 구해서 노출
+
+- CartPage에서 로딩될때 들어오는 payload 값을 가지고 합계를 구해서 표출
+
+#### Remove From Cart
+
+1. CartPage에서 디스패치를 실행하는 메서드를 prop으로 UserCardBlock에게 전달한다.
+
+```
+  const removeFromCart=(productId)=>{
+        dispatch(removeCartItem(productId))
+  }
+```
+
+2. UserCardBlock에서는 각 버튼에서 실행되는 메서드에 상품 ID를 넣어서 부모 컴포넌트의 메서드를 호출한다.
+3. 지정된 메서드를 따라서 액션에서 메서드가 실행된다.
+
+```
+const request = axios.get(`${USER_SERVER}/removeFromCart?id=${productId}`)
+```
+
+- 데이터 호출은 위와 같이 호출되도록 하였다.
+
+4. 아래의 단계에 따라 데이터를 삭제(pull) 하고 신규 데이터를 return 한다.
+   1. 카트 안에서 지우려고 한 상품을 지워주기
+      - 지울때는 pull 사용
+   2. product collection에서 현재 남아있는 상품들의 정보를 가져오기
+   3. 돌아온 cart의 id들을 배열([111,222])형태로 바꿈
+   4. 검색된 상품 상세 정보리스트와 업데이트된 카트 정보를 리턴
+      - 리덕스에 cartDetail 정보를 새롭게 만들려면 카트정보도 함께 필요함
+
+```
+router.get('/removeFromCart',auth,(req,res)=>{
+    User.findByIdAndUpdate(
+        {_id:req.user._id},
+        {
+            $pull:{"cart":{"id":req.query.id}}
+        },
+        {new : true},
+        (err,newUserInfo)=>{
+            let cart = newUserInfo.cart;
+            let array = cart.map(item=>{
+                return item.id
+            })
+            Product.find({_id:{$in:array}})
+            .populate('writer')
+            .exec((err,productInfo)=>{
+
+                return res.status(200).json({
+                    productInfo,cart
+                })
+            })
+        }
+    )
+
+})
+```

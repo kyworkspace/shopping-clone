@@ -15,12 +15,9 @@ function DetailProductPage(props) {
         //url에서 유니크값을 가져와야함
         Axios.get(`/api/product/product_by_id?id=${productId}&type=single`)
         .then(response=>{
-            if(response.data.success){
-                setProduct(response.data.product[0]);
-            }else{
-                alert("상세정보 가져오기를 실패 했습니다.")
-            }
+            setProduct(response.data[0]);
         })
+        .catch(err=>alert(err))
         
     }, [])
     return (

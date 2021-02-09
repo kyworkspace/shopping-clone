@@ -107,7 +107,7 @@ router.post("/products",(req,res)=>{
     .populate('writer')
     .exec((err,product)=>{
       if (err) return res.status(400).send({success:false,err})
-      return res.status(200).json({success:true,product})
+      return res.status(200).send(product)
     })
     
   })
