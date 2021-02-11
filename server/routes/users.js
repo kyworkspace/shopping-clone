@@ -194,7 +194,6 @@ router.post("/successBuy", auth, (req, res) => {
             if (err) return res.json({ success: false, err })
             //payment에다가 transaction 정보 저장
             const payment = new Payment(tracsactionData);
-            console.log(payment)
             payment.save((err, doc) => {
                 if (err) return res.json({ success: false })
                 // 3. Product Collection 에 sold 값 올려주기

@@ -4,6 +4,20 @@
 - React.js
 - MongoDB
 
+### 2021-02-11 1차 완성
+## 메인화면
+![image](https://user-images.githubusercontent.com/45280952/107639568-62a7a880-6cb4-11eb-9e8a-280a7b61c7f8.png)
+## 메인 필터 적용
+![image](https://user-images.githubusercontent.com/45280952/107639655-823ed100-6cb4-11eb-81c0-64df4e9dcad4.png)
+## 상세보기
+![image](https://user-images.githubusercontent.com/45280952/107639700-94b90a80-6cb4-11eb-9c1b-014819ff858c.png)
+## 장바구니
+![image](https://user-images.githubusercontent.com/45280952/107639753-aac6cb00-6cb4-11eb-8d48-a9334e139e87.png)
+## 페이팔 연동
+![image](https://user-images.githubusercontent.com/45280952/107639817-c0d48b80-6cb4-11eb-83e6-23ddfd1dbdda.png)
+## 이력 확인
+![image](https://user-images.githubusercontent.com/45280952/107639861-d053d480-6cb4-11eb-80d8-4ec3a7e236ad.png)
+
 ### 2021-02-04
 
 - FISRT INIT
