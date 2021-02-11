@@ -521,3 +521,5 @@ npm install react-paypal-express-checkout --save
 ```
 npm install async --save
 ```
+
+#### History Page
