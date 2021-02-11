@@ -478,3 +478,46 @@ router.get('/removeFromCart',auth,(req,res)=>{
 
 })
 ```
+
+### PayPal 연동해보기
+
+1. 페이팔에 개발자 등록
+
+```
+https://developer.paypal.com/developer/accounts/
+```
+
+- 샌드박스 테스트 어카운트임,테스트용도
+
+2. 결재 정보를 담을 Payment Model 만들기
+3. 페이팔 버튼 생성, 라이브러리 다운로드
+
+```
+npm install react-paypal-express-checkout --save
+```
+
+  npm react-paypal-express-checkout 로 검색하여 나오는 공식 문서를 참고 하여
+  utils 폴더에 Paypal 클래스형 컴포넌트를 생성. 소스코드는 복사해옴
+  스타일을 줘서 다른 모양으로 변경 
+4. 샌드박스 APP ID를 넣어줌
+  1. my App & Creadentials 선택
+    ![image](https://user-images.githubusercontent.com/45280952/107627374-895ce380-6ca2-11eb-9a7c-aa9a8f7f1dbf.png)
+  2. create APP 을 선택
+  3. AppName 입력 및 비지니스어카운트 선택
+  4. ClientID를 복사하여 Paypal.js의 ClientID로 붙여넣기
+  5. 여기서 등록한 아이디는 판매자 계정으로 취급받는듯
+  6. 결재 로그인을 할때는 다른 테스트 아이디를 사용할것
+
+5. 페이팔 로그인 모달에서는 테스트용도로 만든 아이디로 로그인 가능
+ ID : sb-jr3xr5068296@personal.example.com
+ PW : P1!
+
+6. Total 가격은 props으로 넘어가도록 설정
+7. 결재 성공 후에는
+  1. 카트비우기
+  2. 결제정보 저장(User Collection의 history에 저장)
+
+8. npm async module 다운로드
+```
+npm install async --save
+```

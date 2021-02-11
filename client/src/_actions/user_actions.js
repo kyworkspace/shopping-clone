@@ -6,23 +6,24 @@ import {
     LOGOUT_USER,
     ADD_TO_CART,
     GET_CART_ITEMS,
-    REMOVE_CART_ITEM
+    REMOVE_CART_ITEM,
+    ON_SUCCESS_BUY
 } from './types';
 import { USER_SERVER } from '../components/Config.js';
 
-export function registerUser(dataToSubmit){
-    const request = axios.post(`${USER_SERVER}/register`,dataToSubmit)
+export function registerUser(dataToSubmit) {
+    const request = axios.post(`${USER_SERVER}/register`, dataToSubmit)
         .then(response => response.data);
-    
+
     return {
         type: REGISTER_USER,
         payload: request
     }
 }
 
-export function loginUser(dataToSubmit){
-    const request = axios.post(`${USER_SERVER}/login`,dataToSubmit)
-                .then(response => response.data);
+export function loginUser(dataToSubmit) {
+    const request = axios.post(`${USER_SERVER}/login`, dataToSubmit)
+        .then(response => response.data);
 
     return {
         type: LOGIN_USER,
@@ -30,9 +31,9 @@ export function loginUser(dataToSubmit){
     }
 }
 
-export function auth(){
+export function auth() {
     const request = axios.get(`${USER_SERVER}/auth`)
-    .then(response => response.data);
+        .then(response => response.data);
 
     return {
         type: AUTH_USER,
@@ -40,65 +41,76 @@ export function auth(){
     }
 }
 
-export function logoutUser(){
+export function logoutUser() {
     const request = axios.get(`${USER_SERVER}/logout`)
-    .then(response => response.data);
+        .then(response => response.data);
 
     return {
         type: LOGOUT_USER,
         payload: request
     }
 }
-export function addToCart(productId){    
-    let body ={
-        productId : productId
+export function addToCart(productId) {
+    let body = {
+        productId: productId
     }
-    const request = axios.post(`${USER_SERVER}/addToCart`,body)
-                    .then(response=>response.data)
+    const request = axios.post(`${USER_SERVER}/addToCart`, body)
+        .then(response => response.data)
     return {
-        type : ADD_TO_CART,
-        payload : request
+        type: ADD_TO_CART,
+        payload: request
     }
 }
-export function getCartItems(cartItems,userCart){
+export function getCartItems(cartItems, userCart) {
     //상품을 여러개 가져와야함
     const request = axios.get(`/api/product/product_by_id?id=${cartItems}&type=array`)
-    .then(response=>{
-        //cartItem에 해당하는 Product Collection을 가져와서 Quatity 정보를 넣어줘야함
-        userCart.forEach(item=>{
-            // response안에 있는 상품의 id와 cart의 id를 비교해서
-            response.data.forEach((productDetail,i)=>{
-                //id가 같으면 quntity를 넣어줌
-                if(item.id === productDetail._id){
-                    response.data[i].quantity = item.quantity
-                }
+        .then(response => {
+            //cartItem에 해당하는 Product Collection을 가져와서 Quatity 정보를 넣어줘야함
+            userCart.forEach(item => {
+                // response안에 있는 상품의 id와 cart의 id를 비교해서
+                response.data.forEach((productDetail, i) => {
+                    //id가 같으면 quntity를 넣어줌
+                    if (item.id === productDetail._id) {
+                        response.data[i].quantity = item.quantity
+                    }
+                })
             })
+            return response.data;
         })
-        return response.data;
-    })
     return {
-        type : GET_CART_ITEMS,
-        payload : request
+        type: GET_CART_ITEMS,
+        payload: request
     }
 
 }
 
-export function removeCartItem(productId){
+export function removeCartItem(productId) {
     const request = axios.get(`${USER_SERVER}/removeFromCart?id=${productId}`)
-    .then(response=>{
-        //productInfo 와 cart 정보를 조합해서 cartDetail을 만든다.
-        response.data.cart.forEach(item=>{
-            response.data.productInfo.forEach((product,idx)=>{
-                if(item.id === product._id){
-                    response.data.productInfo[idx].quantity=item.quantity;
-                }
+        .then(response => {
+            //productInfo 와 cart 정보를 조합해서 cartDetail을 만든다.
+            response.data.cart.forEach(item => {
+                response.data.productInfo.forEach((product, idx) => {
+                    if (item.id === product._id) {
+                        response.data.productInfo[idx].quantity = item.quantity;
+                    }
+                })
             })
+            return response.data;
         })
-        return response.data;
-    })
     return {
-        type : REMOVE_CART_ITEM,
-        payload : request
+        type: REMOVE_CART_ITEM,
+        payload: request
+    }
+
+}
+export function onSuccessBuy(data) {
+    const request = axios.post(`${USER_SERVER}/successBuy`, data)
+        .then(response => {
+            return response.data;
+        })
+    return {
+        type: ON_SUCCESS_BUY,
+        payload: request
     }
 
 }
